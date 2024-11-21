@@ -60,39 +60,38 @@ def generate_pdf(request):
     token = request.GET.get('token', None)
     if not token:
         return HttpResponse("Error: No token provided", status=400)
+    
     try:
         decoded_token = AccessToken(token)
     except Exception as e:
         return HttpResponse(f"Error: {str(e)}", status=401)
+    
     # Retrieve all reports from the database
     report = Report.objects.all()
+    
     # Serialize the report data
     serializer = ReportSerializer(report, many=True)
+    
     # Render the report content to an HTML string using the template
-    html_content = render(request, "create_pdf.html", {"report": serializer.data})
-    pdf_path = save_pdf(html_content.content.decode('utf-8'))  # Convert byte content to string
-    return HttpResponseRedirect(pdf_path)
+    html_content = render(request, "create_pdf.html", {"report": serializer.data}).content.decode('utf-8')
+    
+    pdf_path = save_pdf(html_content)
+
+    return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
 
 def save_pdf(html_content):
-    # Define the PDF filename
-    random_number = ''.join([str(random.randint(0, 11)) for _ in range(12)])
-    today_date=datetime.now().strftime('%Y_%m_%d')
+    today_date = datetime.now().strftime('%Y_%m_%d')
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    pdf_filename = f'{today_date}/report_{random_number}_{timestamp}.pdf'
-
-    # Define the path to save the PDF file
+    pdf_filename = f'{today_date}/report_{timestamp}.pdf'
+    
     pdf_path = os.path.join(settings.MEDIA_ROOT, 'pdf_reports', pdf_filename)
-
-    # Ensure the directory exists
+    
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
-
-    # Path to wkhtmltopdf executable
+    
     path_to_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-
-    # Configure pdfkit to use the wkhtmltopdf executable
+    
     config = pdfkit.configuration(wkhtmltopdf=path_to_wkhtmltopdf)
 
-    # Options for the PDF conversion (with no external resources)
     options = {
         'no-outline': None,  # Disable outlines
         'zoom': 1.0,  # Set zoom level
@@ -100,9 +99,10 @@ def save_pdf(html_content):
         'page-width': '210mm',  # Set page width
         'page-height': '297mm',  # Set page height
     }
-    pdfkit.from_string(html_content, pdf_path, configuration=config, options=options)
-    return os.path.join(settings.MEDIA_URL, 'pdf_reports', pdf_filename)
+    
 
+    pdfkit.from_string(html_content, pdf_path, configuration=config, options=options)
+    return pdf_path
 
 
 
