@@ -11,6 +11,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import UserToken,UsersForTkn
 from rest_framework.response import Response
+from .db_functions import fetch_received_energy,fetch_transmissed_energy,fetch_object_by_code
 
 
 def convert_to_md5(username, key):
@@ -56,24 +57,58 @@ class MyTokenObtainPairView(TokenObtainPairView):
 # http://192.168.14.167:8000/api/generate-pdf/?token=<your_token>&sub=<your_sub_value>&dan=<your_dan_value>&gacha=<your_gacha_value>
 # http://192.168.14.167:8000/api/generate-pdf/?token=your_token&sub=your_sub_value&dan=your_dan_value&gacha=your_gacha_value
 
+
+
+
+
+
+
+
+
+
+
+
+
 @api_view(['GET'])
 def generate_pdf(request):
-    data=request.query_params
+    data = request.query_params
     token = data.get('token', None)
-    sub = data.get('sub', None)
-    dan = data.get('dan', None)
-    gacha = data.get('gacha', None)
-    if not all([token, sub, dan, gacha]):
+    sub_code = data.get('sub', None)
+    start_date = data.get('dan', None)
+    end_date = data.get('gacha', None)
+
+    if not all([token, sub_code, start_date, end_date]):
         return Response({"error": "Missing one or more required parameters: 'token', 'sub', 'dan', 'gacha'"}, status=400)
+
     user_credentials = UsersForTkn.objects.all()
     user_md5s = [convert_to_md5(user.username, user.key) for user in user_credentials]
     if token not in user_md5s:
         return Response({"error": "Invalid token"}, status=400)
+
     try:
+        received = fetch_received_energy(start_date, end_date, sub_code)
+        object_data=fetch_object_by_code(sub_code)
+        # print('received:',received)
+        received_total_ap_kwh = sum(row["ap_kwh"] for row in received if row["ap_kwh"] is not None)
+        transmissed=fetch_transmissed_energy(start_date, end_date, sub_code)
+        transmissed_total = sum(row["am_kwh"] for row in transmissed if row["am_kwh"] is not None)
+        print('object_data:',object_data)
         report = {}
-        html_content = render(request, "create_pdf.html", {"report": report}).content.decode('utf-8')
-        pdf_path = save_pdf(html_content)
-        return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+        html_content = render(request, "create_pdf.html", {
+                                            'received':received,
+                                            'total_ap_kwh':received_total_ap_kwh,
+                                            'transmissed':transmissed,
+                                            'transmissed_total':transmissed_total,
+                                            'object_data':object_data,
+                                            'start_date':start_date,
+                                            'end_date':end_date}).content.decode('utf-8')
+        pdf_path,pdf_filename = save_pdf(html_content)
+
+        # Open the generated PDF file in binary mode and return it as a downloadable response
+        response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+
     except Exception as e:
         return Response({"error": f"An error occurred while generating the PDF: {str(e)}"}, status=500)
             
@@ -100,8 +135,25 @@ def save_pdf(html_content):
     }
 
     pdfkit.from_string(html_content, pdf_path, configuration=config, options=options)
-    return pdf_path
+    return pdf_path,pdf_filename
 
 
 def test_view(request):
-    return render(request, 'create_pdf.html')
+    start_date = '01.10.2024'
+    end_date = '01.11.2024'
+    sub_code = 'sub_00001'
+    received = fetch_received_energy(start_date, end_date, sub_code)
+    object_data=fetch_object_by_code(sub_code)
+    # print('received:',received)
+    received_total_ap_kwh = sum(row["ap_kwh"] for row in received if row["ap_kwh"] is not None)
+    transmissed=fetch_transmissed_energy(start_date, end_date, sub_code)
+    transmissed_total = sum(row["am_kwh"] for row in transmissed if row["am_kwh"] is not None)
+    print('object_data:',object_data)
+    return render(request, 'create_pdf.html',{'received':received,
+                                              'total_ap_kwh':received_total_ap_kwh,
+                                              'transmissed':transmissed,
+                                              'transmissed_total':transmissed_total,
+                                              'object_data':object_data,
+                                              'start_date':start_date,
+                                              'end_date':end_date,
+                                              })
