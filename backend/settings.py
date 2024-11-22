@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-y87q%=%5&)ug^pm8rqfj77%$qqn)2x*8%tf=vshdf@8qxxc6lg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -30,11 +30,14 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework',
     'api.apps.ApiConfig',
+    'corsheaders',
 ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,12 +69,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 
@@ -81,10 +84,22 @@ DATABASES = {
         'NAME': 'caslab',
         'USER': 'django_rest_api',
         'PASSWORD': 'django_rest_api',
-        'HOST': '192.168.14.171',  # Set to your PostgreSQL server address
-        'PORT': '5432',       # Default port for PostgreSQL
-    }
-}
+        'HOST': '192.168.14.171',
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=django_rest_api'
+        }},
+      'data': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'caslab',
+        'USER': 'django_rest_api',
+        'PASSWORD': 'django_rest_api',
+        'HOST': '192.168.14.171',
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=\"ies\"'
+        }},
+    }   
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
