@@ -22,8 +22,8 @@ options = {
     'margin-left': '10mm',          # Left margin
     'zoom': 1.0,                    # Optional: Adjust zoom level (1.0 means no zoom)
     'disable-smart-shrinking': True ,# Disable smart shrinking, to avoid unwanted scaling
-    'page-width': '210mm',  # A4 width
-    'page-height': '297mm'  # A4 height
+    'page-width': '210mm',          # A4 width
+    'page-height': '297mm',         # A4 height
 }
 
 # Convert the HTML file to PDF with the specified options

@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,7 +16,7 @@
 
         /* Body and container styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Times New Roman', Times, serif, sans-serif;
             line-height: 1.6;
             background-color: #f8f9fa;
         }
@@ -49,16 +50,29 @@
             padding: 10px;
             text-align: center;
             border: 1px solid #ddd;
-           
+            font-size:12px
         }
 
         th {
             background-color: #f2f2f2;
             font-weight: bold;
+            font-size:12px
         }
-        thead tr th {
-            background-color: aqua;
+
+        /* Prevent table header from repeating on multiple pages */
+        thead {
+            display: table-header-group;
         }
+
+        /* Apply page-break rules to prevent breaks inside table rows */
+        table, tr, td {
+            page-break-inside: avoid;
+        }
+
+        /* Force thead to stay at the top and avoid repeating on new pages */
+        thead { display: table-header-group; }
+        tfoot { display: table-row-group; }
+        tr { page-break-inside: avoid; }
 
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -87,156 +101,90 @@
 </head>
 
 <body>
-
     <div class="container my-4">
         <h2>ELEKTR ENERGIYA BALANSI</h2>
-        <h5 class="text-left">Podstansiya: G`uzor 500/220/110/10 kV</h5>
+        <h5 class="text-left">Podstansiya: {{object_data.object_name}}</h5>
         <h5 class="text-left">Asos: 2019 yil 11 sentabrdagi 2-sonli buyruq.</h5>
         <h5 class="text-left">Xay'at a'zolari:</h5>
         <h5 class="text-left">Xay´at raisi: {select1} bosh muxandisi - D.B.Maxamov</h5>
         <h5 class="text-left">Xay'at a'zolari:</h5>
-        <h5 class="text-left">Qash MET ICHTB boshlig`i-I.B.To`raev</h5>
-        <h5 class="text-left">Qash MET PX boshlig`i-D.S.Jo`raev</h5>
-        <h5 class="text-left">Qash MET RXEO` bo`limi boshlig`i-M.E.Axmedov</h5>
-        <h5 class="text-left">Qash MET PS G`uzor 500 kV boshlig`i-R.O.Azimov</h5>
-        <h5 class="text-left">Qash MET EEUSTQ bo`limi boshlig`i-K.E.Halimov</h5>
+        <h5 class="text-left">{{object_data.description}} ICHTB boshlig`i-I.B.To`raev</h5>
+        <h5 class="text-left">{{object_data.description}} PX boshlig`i-D.S.Jo`raev</h5>
+        <h5 class="text-left">{{object_data.description}} RXEO` bo`limi boshlig`i-M.E.Axmedov</h5>
+        <h5 class="text-left">{{object_data.description}} PS G`uzor 500 kV boshlig`i-R.O.Azimov</h5>
+        <h5 class="text-left">{{object_data.description}} EEUSTQ bo`limi boshlig`i-K.E.Halimov</h5>
         <table>
             <thead>
                 <tr>
                     <th  rowspan="2">№</th>
-                    <th  rowspan="2">O'lovchov priboringining raqami</th>
-                    <th rowspan="2" >Xisobga olish ob'ektlarining nomi</th>
-                    <th colspan="2">Ko'rsatkichlar</th>
-                    <th rowspan="2">Bir oylik ko'rsatkichlar farqi</th>
-                    <th rowspan="2">O'lovchov priboringining koeffitsienti</th>
-                    <th rowspan="2">O'lovchov priboringining bir oy davomidagi xisobga olgan elektr energiya miqdori,
-                        ming kVt.c</th>
+                    <th  rowspan="2">O‘lchov priborining raqami</th>
+                    <th rowspan="2" >Hisobga olish obyektlarining nomi</th>
+                    <th colspan="2">Ko‘rsatkichlar</th>
+                    <th rowspan="2">Bir oylik ko‘rsatkichlar farqi</th>
+                    <th rowspan="2">O‘lchov priborining koeffitsiyenti</th>
+                    <th rowspan="2">O‘lchov priborining bir oy davomidagi hisobga olgan elektr energiyasi miqdori, ming kVt.c</th>
                 </tr>
                 <tr>
-                    <th>01.11.24. yil soat 04-00 ga</th>
-                    <th>01.10.24. yil soat 04-00 ga</th>
+                    <th>{{start_date}} yil 04:00 holatiga</th>
+                    <th>{{end_date}} yil 04:00 holatiga</th>
+                </tr>
+                <tr>
+                    <td colspan="1"><h3 class="text-left">I</h3></td>
+                    <td colspan="7"><h3 class="text-left">Elektr energiya qabuli</h3></td>
                 </tr>
             </thead>
             <tbody>
+                {% for row in received %}
+                {% if row.meter_no != "===" %}
                 <tr>
-                    <td class="text-center">1</td>
-                    <td class="text-center">1242000400062</td>
-                    <td style="word-break: keep-all;">JI-520</td>
-                    <td class="text-center">29,262</td>
-                    <td class="text-center">28,433</td>
-                    <td class="text-center">0.829</td>
-                    <td class="text-center">10,000,000</td>
-                    <td class="text-center">8,290,000</td>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.object_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.dan_ap|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.gacha_ap|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.ap_farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.ap_kwh|default:"-"|add_space_if_decimal }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">I- bolim bo`yicha jami</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ total_ap_kwh|add_space_if_decimal }}</h3></td>
                 </tr>
                 <tr>
-                    <td class="text-center">2</td>
-                    <td class="text-center">1242000400064</td>
-                    <td>JI-513</td>
-                    <td class="text-center">239,250</td>
-                    <td class="text-center">186,015</td>
-                    <td class="text-center">53,235</td>
-                    <td class="text-center">5,232,350</td>
-                    <td class="text-center">532,350,000</td>
+                    <td><h3 class="text-left">IV.4</h3></td>
+                    <td colspan="3"><h3 class="text-left">MET tarmog`iga elektr energiya uzatish.</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
                 </tr>
+                {% for row in transmissed %}
+                {% if row.meter_no != "===" %}
                 <tr>
-                    <td class="text-center">3</td>
-                    <td class="text-center">1242000400068</td>
-                    <td>JI-507</td>
-                    <td class="text-center">76,361</td>
-                    <td class="text-center">76,240</td>
-                    <td class="text-center">0.121</td>
-                    <td class="text-center">1,210,000</td>
-                    <td class="text-center">1,210,000</td>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.object_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.dan_am|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.gacha_am|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.ap_farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.am_kwh|default:"-"|add_space_if_decimal }}</td>
                 </tr>
+                {% endif %}
+                {% endfor %}
                 <tr>
-                    <td class="text-center">4</td>
-                    <td class="text-center">1242000400063</td>
-                    <td>JI-519</td>
-                    <td class="text-center">40,109</td>
-                    <td class="text-center">40,108</td>
-                    <td class="text-center">0</td>
-                    <td class="text-center">10,000</td>
-                    <td class="text-center">10,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">5</td>
-                    <td class="text-center">1242000400067</td>
-                    <td>L-SH-G qabuli</td>
-                    <td class="text-center">67,370</td>
-                    <td class="text-center">63,830</td>
-                    <td class="text-center">3,540</td>
-                    <td class="text-center">7,788,000</td>
-                    <td class="text-center">7,788,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">6</td>
-                    <td class="text-center">1242000400065</td>
-                    <td style="word-break: keep-all;">L-Nasosnaya</td>
-                    <td class="text-center">9,337</td>
-                    <td class="text-center">5,436</td>
-                    <td class="text-center">3,901</td>
-                    <td class="text-center">8,552,000</td>
-                    <td class="text-center">7,455,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">7</td>
-                    <td class="text-center">1242000400065</td>
-                    <td>L-K-G</td>
-                    <td class="text-center">86,734</td>
-                    <td class="text-center">52,436</td>
-                    <td class="text-center">34,298</td>
-                    <td class="text-center">7,788,000</td>
-                    <td class="text-center">7,788,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">8</td>
-                    <td class="text-center">1242000400065</td>
-                    <td>L-Pachkamar-1</td>
-                    <td class="text-center">3,093</td>
-                    <td class="text-center">3,091</td>
-                    <td class="text-center">2</td>
-                    <td class="text-center">7,788,000</td>
-                    <td class="text-center">7,788,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">9</td>
-                    <td class="text-center">1242000400066</td>
-                    <td>L-Pachkamar-2</td>
-                    <td class="text-center">3,093</td>
-                    <td class="text-center">3,083</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">7,788,000</td>
-                    <td class="text-center">7,788,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">10</td>
-                    <td class="text-center">1242000400066</td>
-                    <td>L-A.Temur-1</td>
-                    <td class="text-center">2,500</td>
-                    <td class="text-center">2,400</td>
-                    <td class="text-center">100</td>
-                    <td class="text-center">4,400,000</td>
-                    <td class="text-center">4,400,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">11</td>
-                    <td class="text-center">1242000400066</td>
-                    <td>L-A.Temur-2</td>
-                    <td class="text-center">3,000</td>
-                    <td class="text-center">2,900</td>
-                    <td class="text-center">100</td>
-                    <td class="text-center">4,400,000</td>
-                    <td class="text-center">4,400,000</td>
-                </tr>
-                <tr>
-                    <td class="text-center">12</td>
-                    <td class="text-center">1242000400068</td>
-                    <td>OV-220 kV</td>
-                    <td class="text-center">3,000</td>
-                    <td class="text-center">3,100</td>
-                    <td class="text-center">100</td>
-                    <td class="text-center">4,400,000</td>
-                    <td class="text-center">4,400,000</td>
+                    <td colspan="3"><h3 class="text-left">IV.4-bo`limi bo`yicha jami</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ transmissed_total|add_space_if_decimal }}</h3></td>
                 </tr>
             </tbody>
         </table>

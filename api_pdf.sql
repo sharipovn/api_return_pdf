@@ -16,7 +16,7 @@ SELECT
     ,to_char(current_timestamp,'DD.MM.YYYY HH24:MI')
     ,
     'http://192.168.14.167:8000/api/generate-pdf/?token=' || md5(username||KEY||to_char(current_timestamp
-, 'DD.MM.YYYY HH24:MI'))||'&sub=sub_00001&dan=01.11.2024&gacha=01.11.2024' AS url
+, 'DD.MM.YYYY HH24:MI'))||'&sub=sub_00001&dan=01.10.2024&gacha=01.11.2024' AS url
 FROM   ies.users_for_tkn;
 
 
