@@ -18,8 +18,15 @@ from django.utils import timezone
 from datetime import datetime
 import random
 from django.http import FileResponse
+import hashlib
 
 
+def convert_to_md5(username, key):
+    current_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+    input_string = f"{current_time}{username}{key}"
+    input_bytes = input_string.encode('utf-8')
+    md5_hash = hashlib.md5(input_bytes).hexdigest()
+    return md5_hash
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
