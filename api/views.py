@@ -12,6 +12,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import UserToken,UsersForTkn
 from rest_framework.response import Response
 from .db_functions import fetch_received_energy,fetch_transmissed_energy,fetch_object_by_code
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
 
 def convert_to_md5(username, key):
@@ -138,7 +140,10 @@ def save_pdf(html_content):
     return pdf_path,pdf_filename
 
 
+@login_required  # Ensures the user is logged in
 def test_view(request):
+    if not request.user.is_staff:  # Checks if the logged-in user is an admin
+        return HttpResponseForbidden("You are not authorized to view this page.")
     start_date = '01.10.2024'
     end_date = '01.11.2024'
     sub_code = 'sub_00001'
