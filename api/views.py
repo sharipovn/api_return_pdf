@@ -124,7 +124,7 @@ def save_pdf(html_content):
     pdf_path = os.path.join(settings.MEDIA_ROOT, 'pdf_reports', pdf_filename)
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
 
-    path_to_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    path_to_wkhtmltopdf = r'C:\Users\admin\Desktop\api_return_pdf\wkhtmltopdf.exe'
 
     config = pdfkit.configuration(wkhtmltopdf=path_to_wkhtmltopdf)
 
@@ -140,10 +140,10 @@ def save_pdf(html_content):
     return pdf_path,pdf_filename
 
 
-@login_required  # Ensures the user is logged in
+# @login_required  # Ensures the user is logged in
 def test_view(request):
-    if not request.user.is_staff:  # Checks if the logged-in user is an admin
-        return HttpResponseForbidden("You are not authorized to view this page.")
+    # if not request.user.is_staff:  # Checks if the logged-in user is an admin
+    #     return HttpResponseForbidden("You are not authorized to view this page.")
     start_date = '01.10.2024'
     end_date = '01.11.2024'
     sub_code = 'sub_00001'
