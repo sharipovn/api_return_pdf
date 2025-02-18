@@ -109,7 +109,7 @@
 <body>
     <div class="container my-4">
         <h2>ELEKTR ENERGIYA BALANSI</h2>
-        <h5 class="text-left">Podstansiya: {{object_data.object_name}}</h5>
+        <h5 class="text-left">Podstansiya: {{object_data.obj_name}}</h5>
         <h5 class="text-left">Asos: 2019 yil 11 sentabrdagi 2-sonli buyruq.</h5>
         <h5 class="text-left">Xay'at a'zolari:</h5>
         <h5 class="text-left">Xay´at raisi:  bosh muxandisi - D.B.Maxamov</h5>
@@ -145,7 +145,7 @@
                 <tr>
                     <td class="text-center">{{ forloop.counter }}</td>
                     <td class="text-center">{{ row.meter_no|default:"-" }}</td>
-                    <td style="word-break: keep-all;">{{ row.object_name|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
                     <td class="text-center">{{ row.dan_ap|default:"-"|add_space_if_decimal }}</td>
                     <td class="text-center">{{ row.gacha_ap|default:"-"|add_space_if_decimal }}</td>
                     <td class="text-center">{{ row.ap_farq|default:"-"|add_space_if_decimal }}</td>
@@ -175,7 +175,7 @@
                 <tr>
                     <td class="text-center">{{ forloop.counter }}</td>
                     <td class="text-center">{{ row.meter_no|default:"-" }}</td>
-                    <td style="word-break: keep-all;">{{ row.object_name|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
                     <td class="text-center">{{ row.dan_am|default:"-"|add_space_if_decimal }}</td>
                     <td class="text-center">{{ row.gacha_am|default:"-"|add_space_if_decimal }}</td>
                     <td class="text-center">{{ row.ap_farq|default:"-"|add_space_if_decimal }}</td>
