@@ -1,0 +1,638 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Elektr Energiya Balansi</title>
+    <style>
+        /* Reset some basic styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and container styling */
+        body {
+            font-family: Calibri;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        h5 {
+            margin: 5px 0;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size:9px
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            font-size:12px
+        }
+
+        /* Prevent table header from repeating on multiple pages */
+        thead {
+            display: table-header-group;
+        }
+
+        /* Apply page-break rules to prevent breaks inside table rows */
+        table, tr, td {
+            page-break-inside: avoid;
+        }
+
+        thead {
+            display: table-row-group;
+        }
+
+        tfoot {
+            display: table-row-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Table responsiveness for smaller screens */
+        @media screen and (max-width: 768px) {
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-4">
+        <h2>ELEKTR ENERGIYA BALANSI(IES)</h2>
+        <h5 class="text-left">Issiqlik Elektr stansiyasi: {{object_data.obj_name}}</h5>
+        <h5 class="text-left">Asos: 2019 yil 11 sentabrdagi 2-sonli buyruq.</h5>
+        <h5 class="text-left">Xay'at a'zolari:</h5>
+        <h5 class="text-left">Xay´at raisi:  bosh muxandisi - D.B.Maxamov</h5>
+        <h5 class="text-left">Xay'at a'zolari:</h5>
+        <h5 class="text-left">{{object_data.description}} ICHTB boshlig`i-X.B.Sayfuddinov</h5>
+        <h5 class="text-left">{{object_data.description}} PX boshlig`i-D.S.Jo`raev</h5>
+        <h5 class="text-left">{{object_data.description}} RXEO` bo`limi boshlig`i-M.E.Axmedov</h5>
+        <h5 class="text-left">{{object_data.description}} PS G`uzor 500 kV boshlig`i-R.O.Azimov</h5>
+        <h5 class="text-left">{{object_data.description}} EEUSTQ bo`limi boshlig`i-K.E.Halimov</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th  rowspan="2">№</th>
+                    <th  rowspan="2">O‘lchov priborining raqami</th>
+                    <th rowspan="2" >Hisobga olish obyektlarining nomi</th>
+                    <th colspan="2">Ko‘rsatkichlar</th>
+                    <th rowspan="2">Bir oylik ko‘rsatkichlar farqi</th>
+                    <th rowspan="2">O‘lchov priborining koeffitsiyenti</th>
+                    <th rowspan="2">O‘lchov priborining bir oy davomidagi hisobga olgan elektr energiyasi miqdori, ming kVt.c</th>
+                </tr>
+                <tr>
+                    <th>{{start_date}} yil  holatiga</th>
+                    <th>{{end_date}} yil  holatiga</th>
+                </tr>
+                <tr>
+                    <td colspan="1"><h3 class="text-left">I</h3></td>
+                    <td colspan="7"><h3 class="text-left">GENERATSIYA</h3></td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in fl_gen_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">I- bolim bo`yicha jami</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_gen_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+                <tr>
+                    <td><h3 class="text-left">II</h3></td>
+                    <td colspan="3"><h3 class="text-left">ФЭС</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_fes_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">II</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_fes_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_b_exc_gen_data -->
+
+                <tr>
+                    <td><h3 class="text-left">III</h3></td>
+                    <td colspan="3"><h3 class="text-left">b_exc_gen_data</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_b_exc_gen_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">III</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_b_exc_gen_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+
+                <!-- fl_b_exc_sn_data -->
+
+                <tr>
+                    <td><h3 class="text-left">IV</h3></td>
+                    <td colspan="3"><h3 class="text-left">b_exc_sn_data</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_b_exc_sn_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">IV</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_b_exc_sn_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_cust_sn_data -->
+
+                <tr>
+                    <td><h3 class="text-left">V</h3></td>
+                    <td colspan="3"><h3 class="text-left">cust_sn_data</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_cust_sn_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">V</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_cust_sn_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+
+                <!-- fl_cust_xn_data -->
+
+                <tr>
+                    <td><h3 class="text-left">VI</h3></td>
+                    <td colspan="3"><h3 class="text-left">cust_xn_data</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_cust_xn_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">VI</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_cust_xn_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_davalsky_data -->
+
+                <tr>
+                    <td><h3 class="text-left">VII</h3></td>
+                    <td colspan="3"><h3 class="text-left">davalsky_data</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_davalsky_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">VII</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_davalsky_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_receive_het_data -->
+
+                <tr>
+                    <td><h3 class="text-left">VIII</h3></td>
+                    <td colspan="3"><h3 class="text-left">HET qabul</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_receive_het_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">VIII</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_receive_het_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_receive_mes_data -->
+
+                <tr>
+                    <td><h3 class="text-left">IX</h3></td>
+                    <td colspan="3"><h3 class="text-left">MES qabul</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_receive_mes_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">IX</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_receive_mes_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_receive_sotish_data -->
+
+                <tr>
+                    <td><h3 class="text-left">X</h3></td>
+                    <td colspan="3"><h3 class="text-left">Sotish Qabul</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_receive_sotish_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">X</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_receive_sotish_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+
+                <!-- fl_send_het_data -->
+
+                <tr>
+                    <td><h3 class="text-left">XI</h3></td>
+                    <td colspan="3"><h3 class="text-left">HET Uzatish</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_send_het_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">XI</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_send_het_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+
+
+                <!-- fl_send_mes_data -->
+
+                <tr>
+                    <td><h3 class="text-left">XII</h3></td>
+                    <td colspan="3"><h3 class="text-left">MES Uzatish</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_send_mes_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">XII</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_send_mes_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+                <!-- fl_send_sotish_data -->
+
+                <tr>
+                    <td><h3 class="text-left">XIII</h3></td>
+                    <td colspan="3"><h3 class="text-left">Sotish Uzatish</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_send_sotish_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">XIII</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_send_sotish_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+
+                <!-- fl_tsn_total_data -->
+
+                <tr>
+                    <td><h3 class="text-left">XIV</h3></td>
+                    <td colspan="3"><h3 class="text-left">TSN(Total)</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_tsn_total_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">XIV</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_tsn_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+
+                <!-- fl_txn_total_data -->
+
+                <tr>
+                    <td><h3 class="text-left">XV</h3></td>
+                    <td colspan="3"><h3 class="text-left">TXN(Total)</h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                    <td><h3 class="text-left"></h3></td>
+                </tr>
+                {% for row in fl_txn_total_data %}
+                {% if row.meter_no != "===" %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-center">{{ row.meter_no|default:"-" }}</td>
+                    <td style="word-break: keep-all;">{{ row.obj_name|default:"-" }}</td>
+                    <td class="text-center">{{ row.start_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.end_value|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.farq|default:"-"|add_space_if_decimal }}</td>
+                    <td class="text-center">{{ row.koef|default:"-"|add_space_if_decimal_zero }}</td>
+                    <td class="text-center">{{ row.kwh|default:"-"|add_space_if_decimal_zero }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="3"><h3 class="text-left">XV</h3></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3 class="text-center">{{ fl_txn_total_kwh|add_space_if_decimal_zero }}</h3></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

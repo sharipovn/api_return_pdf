@@ -123,3 +123,146 @@ def fetch_object_by_code(obj_code):
         result = dict(zip(columns, row))  # Map column names to values in the row
         return result
     return None  # Return None if no matching row is found
+  
+  
+  
+#-----------------------------------------------------for ies---------------------------------------------------------------------
+def get_fl_fes(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_fes(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_gen(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_gen(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_b_exc_gen(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_b_exc_gen(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_b_exc_sn(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_b_exc_sn(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_cust_sn(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_cust_sn(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_cust_xn(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_cust_xn(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_davalsky(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_davalsky(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_receive_het(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_receive_het(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_receive_mes(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_receive_mes(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_receive_sotish(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_receive_sotish(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_send_het(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_send_het(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_send_mes(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_send_mes(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_send_sotish(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_send_sotish(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def get_fl_tsn_total(start_date, end_date, ies_code):
+    query = """SELECT obj_name, obj_type, meter_no, start_date, start_value, end_date, end_value,end_value-start_value farq, koef, kwh FROM ies.fl_tsn_total(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+
+def get_fl_txn_total(start_date, end_date, ies_code):
+    query = """SELECT * FROM ies.fl_txn_total(%s, %s, %s);"""
+    with connection.cursor() as cursor:
+        cursor.execute(query, [ies_code, start_date, end_date])
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+
+
+
+
+def fetch_ies_object_by_code(obj_code):
+    query = """
+    SELECT * 
+    FROM ies.map_objects no2 
+    WHERE no2.obj_code = %s;
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query, [obj_code])  # Pass obj_code as parameter
+        row = cursor.fetchone()  # Fetch only the first row
+    if row:
+        columns = [col[0] for col in cursor.description]  # Get column names
+        result = dict(zip(columns, row))  # Map column names to values in the row
+        return result
+    return None  # Return None if no matching row is found
